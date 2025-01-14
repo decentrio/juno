@@ -7,6 +7,7 @@ import (
 
 	tmctypes "github.com/cometbft/cometbft/rpc/core/types"
 	"github.com/cosmos/cosmos-sdk/types/tx"
+	types1 "github.com/cometbft/cometbft/abci/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -164,6 +165,10 @@ type TxBody struct {
 	*tx.TxBody
 	TimeoutHeight uint64    `json:"timeout_height,string,omitempty"`
 	Messages      []Message `json:"messages,omitempty"`
+}
+
+type TxLogs struct {
+	Events []types1.Event  `json:"messages,omitempty"`
 }
 
 // UnmarshalJSON implements the json.Unmarshaler interface.
