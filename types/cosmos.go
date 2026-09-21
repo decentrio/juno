@@ -140,11 +140,15 @@ func (tx Transaction) Successful() bool {
 type TxResponse struct {
 	*sdk.TxResponse
 
-	// Override these fields to apply the proper type since the Cosmos SDK encodes uint64 as strings
+	// Override these fields to apply the proper type since the Cosmos SDK encodes uint64/int64 as
+	// strings. GasWanted/GasUsed must stay signed (int64, matching sdk.TxResponse): a tx rejected
+	// by the ante handler before gas metering (eg. insufficient funds) legitimately reports -1 for
+	// both, and unmarshaling that into a uint64 field fails, permanently breaking parsing for the
+	// whole block it's in.
 	Tx        *Tx    `json:"tx,omitempty"`
 	Height    uint64 `json:"height,string,omitempty"`
-	GasWanted uint64 `json:"gas_wanted,string,omitempty"`
-	GasUsed   uint64 `json:"gas_used,string,omitempty"`
+	GasWanted int64  `json:"gas_wanted,string,omitempty"`
+	GasUsed   int64  `json:"gas_used,string,omitempty"`
 }
 
 // -------------------------------------------------------------------------------------------------------------------

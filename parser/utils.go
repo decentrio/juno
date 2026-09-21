@@ -21,12 +21,15 @@ func findValidatorByAddr(consAddr string, vals *tmctypes.ResultValidators) *tmty
 	return nil
 }
 
-// sumGasTxs returns the total gas consumed by a set of transactions.
+// sumGasTxs returns the total gas consumed by a set of transactions. A tx rejected by the ante
+// handler before gas metering reports a negative GasUsed sentinel and contributes nothing here.
 func sumGasTxs(txs []*types.Transaction) uint64 {
 	var totalGas uint64
 
 	for _, tx := range txs {
-		totalGas += tx.GasUsed
+		if tx.GasUsed > 0 {
+			totalGas += uint64(tx.GasUsed)
+		}
 	}
 
 	return totalGas
