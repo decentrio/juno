@@ -207,7 +207,10 @@ ON CONFLICT (hash, partition_id) DO UPDATE
 	}
 	sigInfoBz := fmt.Sprintf("[%s]", strings.Join(sigInfos, ","))
 
-	logsBz, err := json.Marshal(tx.Logs)
+	logs := types.TxLogs{
+		Events: tx.Events,
+	} 
+	logsBz, err := json.Marshal(logs)
 	if err != nil {
 		return err
 	}

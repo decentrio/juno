@@ -60,8 +60,8 @@ func NewTxResponseFromSdkTxResponse(txResponse *sdk.TxResponse, tx *types.Tx) *t
 		TxResponse: txResponse,
 		Tx:         tx,
 		Height:     uint64(txResponse.Height),
-		GasWanted:  uint64(txResponse.GasWanted),
-		GasUsed:    uint64(txResponse.GasUsed),
+		GasWanted:  txResponse.GasWanted,
+		GasUsed:    txResponse.GasUsed,
 	}
 }
 
