@@ -223,6 +223,18 @@ func (cp *Node) Txs(block *tmctypes.ResultBlock) ([]*types.Transaction, error) {
 			return nil, err
 		}
 
+		// The tx-by-hash lookup above is keyed only by hash, so it can resolve to a block other
+		// than the one we're currently processing: a tx rejected by the ante handler (eg.
+		// insufficient funds, gas_wanted=-1) still gets included in a block, but never consumes
+		// its signature nonce - so an Ethereum tx signed with the deterministic ECDSA scheme can
+		// be resubmitted byte-for-byte identical once the sender's state allows it, producing the
+		// exact same tx hash in a second, later block. When that happens, the tx-service index
+		// returns whichever occurrence it considers canonical (observed: the later one), so
+		// txResponse.Height can silently disagree with the block we're actually iterating here.
+		// block.Block.Txs is the authoritative source for "which block this tx is in", so force
+		// the height to match it rather than trusting the hash lookup.
+		txResponse.Height = uint64(block.Block.Height)
+
 		txResponses[i] = txResponse
 	}
 
